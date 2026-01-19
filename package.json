@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "test": "node test-runner.js"
+    "test": "node test-runner.js",
+    "build": "echo 'No build step required'"
   },
   "keywords": [
     "ecommerce",
@@ -18,11 +19,13 @@
   "author": "Валиев И.Б., группа 036-22 SMMr",
   "license": "MIT",
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
   },
   "dependencies": {},
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/valiyev-sportshop.git"
-  }
+    "url": "https://github.com/darlingx1x/valiev.git"
+  },
+  "homepage": "https://valiyev-sportshop.onrender.com"
 }
