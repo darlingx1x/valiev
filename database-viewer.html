@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Просмотр БД - Валиев И. Б., группа 036-22 SMMr</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            background: #1a1a1a;
+            color: #00ff00;
+            line-height: 1.4;
+            padding: 1rem;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            border: 1px solid #00ff00;
+            padding: 1rem;
+            background: rgba(0, 255, 0, 0.1);
+        }
+        
+        .terminal-window {
+            background: #000;
+            border: 1px solid #00ff00;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+        
+        .terminal-header {
+            background: #00ff00;
+            color: #000;
+            padding: 0.5rem 1rem;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .terminal-content {
+            padding: 1rem;
+            max-height: 400px;
+            overflow-y: auto;
+            font-size: 0.9rem;
+        }
+        
+        .file-content {
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        
+        .json-key {
+            color: #ff6b6b;
+        }
+        
+        .json-string {
+            color: #4ecdc4;
+        }
+        
+        .json-number {
+            color: #ffe66d;
+        }
+        
+        .json-boolean {
+            color: #ff8b94;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            background: #00ff00;
+            color: #000;
+            border: none;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: #00cc00;
+            transform: translateY(-2px);
+        }
+        
+        .btn.active {
+            background: #ffff00;
+            color: #000;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00ff00;
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ffff00;
+        }
+        
+        .log-entry {
+            margin-bottom: 0.5rem;
+            padding: 0.5rem;
+            border-left: 3px solid #00ff00;
+            background: rgba(0, 255, 0, 0.05);
+        }
+        
+        .log-timestamp {
+            color: #888;
+            font-size: 0.8rem;
+        }
+        
+        .log-operation {
+            color: #ffff00;
+            font-weight: bold;
+        }
+        
+        .auto-refresh {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #00ff00;
+            padding: 0.5rem;
+            border-radius: 4px;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-online {
+            background: #00ff00;
+        }
+        
+        .status-offline {
+            background: #ff0000;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .table-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+        
+        .scrollable {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🗄️ DATABASE VIEWER</h1>
+            <p>Просмотр базы данных в реальном времени</p>
+            <p><strong>Автор:</strong> Валиев И. Б., группа 036-22 SMMr</p>
+        </div>
+        
+        <div class="auto-refresh">
+            <span class="status-indicator status-online" id="status"></span>
+            <span id="refresh-status">Автообновление: ВКЛ</span>
+        </div>
+        
+        <div class="stats" id="stats">
+            <!-- Статистика загружается динамически -->
+        </div>
+        
+        <div class="controls">
+            <button class="btn active" onclick="showTable('products')">📦 PRODUCTS</button>
+            <button class="btn" onclick="showTable('categories')">📂 CATEGORIES</button>
+            <button class="btn" onclick="showTable('orders')">📋 ORDERS</button>
+            <button class="btn" onclick="showTable('cart_items')">🛒 CART</button>
+            <button class="btn" onclick="showTable('operation_logs')">📝 LOGS</button>
+            <button class="btn" onclick="showAllTables()">🗄️ ALL TABLES</button>
+            <button class="btn" onclick="exportDatabase()">💾 EXPORT SQL</button>
+        </div>
+        
+        <div id="content">
+            <!-- Содержимое загружается динамически -->
+        </div>
+    </div>
+    
+    <script>
+        let currentTable = 'products';
+        let autoRefresh = true;
+        let refreshInterval;
+        
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStats();
+            showTable('products');
+            startAutoRefresh();
+        });
+        
+        // Автообновление
+        function startAutoRefresh() {
+            if (refreshInterval) clearInterval(refreshInterval);
+            
+            refreshInterval = setInterval(() => {
+                if (autoRefresh) {
+                    loadStats();
+                    if (currentTable) {
+                        showTable(currentTable);
+                    }
+                }
+            }, 3000);
+        }
+        
+        function toggleAutoRefresh() {
+            autoRefresh = !autoRefresh;
+            const status = document.getElementById('refresh-status');
+            const indicator = document.getElementById('status');
+            
+            if (autoRefresh) {
+                status.textContent = 'Автообновление: ВКЛ';
+                indicator.className = 'status-indicator status-online';
+                startAutoRefresh();
+            } else {
+                status.textContent = 'Автообновление: ВЫКЛ';
+                indicator.className = 'status-indicator status-offline';
+                clearInterval(refreshInterval);
+            }
+        }
+        
+        // Загрузка статистики
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/stats');
+                const stats = await response.json();
+                
+                const statsHtml = `
+                    <div class="stat-card">
+                        <div class="stat-number">${stats.total_products}</div>
+                        <div>ТОВАРОВ</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${stats.total_categories}</div>
+                        <div>КАТЕГОРИЙ</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${stats.total_orders}</div>
+                        <div>ЗАКАЗОВ</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${formatPrice(stats.total_revenue)}</div>
+                        <div>ВЫРУЧКА</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${stats.low_stock_products}</div>
+                        <div>МАЛО НА СКЛАДЕ</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${Math.round(stats.database_stats?.diskUsage / 1024) || 0} KB</div>
+                        <div>РАЗМЕР БД</div>
+                    </div>
+                `;
+                
+                document.getElementById('stats').innerHTML = statsHtml;
+                
+            } catch (error) {
+                console.error('Ошибка загрузки статистики:', error);
+            }
+        }
+        
+        // Показать таблицу
+        async function showTable(tableName) {
+            currentTable = tableName;
+            
+            // Обновляем активную кнопку
+            document.querySelectorAll('.btn').forEach(btn => btn.classList.remove('active'));
+            event?.target?.classList.add('active');
+            
+            try {
+                let data;
+                
+                if (tableName === 'products') {
+                    const response = await fetch('/api/products');
+                    data = await response.json();
+                } else if (tableName === 'categories') {
+                    const response = await fetch('/api/categories');
+                    data = await response.json();
+                } else if (tableName === 'orders') {
+                    const response = await fetch('/api/orders');
+                    data = await response.json();
+                } else if (tableName === 'operation_logs') {
+                    const response = await fetch('/api/database/logs?limit=50');
+                    data = await response.json();
+                } else {
+                    // Для других таблиц используем прямое чтение файлов
+                    const response = await fetch(`/data/${tableName}.json`);
+                    data = await response.json();
+                }
+                
+                displayTable(tableName, data);
+                
+            } catch (error) {
+                console.error('Ошибка загрузки таблицы:', error);
+                document.getElementById('content').innerHTML = `
+                    <div class="terminal-window">
+                        <div class="terminal-header">
+                            <span>ERROR: ${tableName.toUpperCase()}</span>
+                        </div>
+                        <div class="terminal-content">
+                            <div style="color: #ff0000;">
+                                Ошибка загрузки данных: ${error.message}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        // Отображение таблицы
+        function displayTable(tableName, data) {
+            let content = '';
+            
+            if (tableName === 'operation_logs') {
+                content = `
+                    <div class="terminal-window">
+                        <div class="terminal-header">
+                            <span>📝 OPERATION LOGS (последние 50)</span>
+                            <span>${data.length} записей</span>
+                        </div>
+                        <div class="terminal-content scrollable">
+                            ${data.map(log => `
+                                <div class="log-entry">
+                                    <div class="log-timestamp">${new Date(log.timestamp).toLocaleString('ru-RU')}</div>
+                                    <div><span class="log-operation">${log.operation}</span> на таблице <strong>${log.table}</strong></div>
+                                    ${log.record_id ? `<div>ID записи: ${log.record_id}</div>` : ''}
+                                    ${log.data ? `<div style="font-size: 0.8rem; color: #888; margin-top: 0.5rem;">${log.data}</div>` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            } else {
+                content = `
+                    <div class="terminal-window">
+                        <div class="terminal-header">
+                            <span>📊 ${tableName.toUpperCase()}</span>
+                            <span>${data.length} записей</span>
+                        </div>
+                        <div class="terminal-content scrollable">
+                            <div class="file-content">${formatJSON(data)}</div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('content').innerHTML = content;
+        }
+        
+        // Показать все таблицы
+        async function showAllTables() {
+            currentTable = null;
+            
+            const tables = ['categories', 'products', 'orders', 'order_items', 'cart_items'];
+            let content = '<div class="table-grid">';
+            
+            for (const table of tables) {
+                try {
+                    const response = await fetch(`/data/${table}.json`);
+                    const data = await response.json();
+                    
+                    content += `
+                        <div class="terminal-window">
+                            <div class="terminal-header">
+                                <span>${table.toUpperCase()}</span>
+                                <span>${data.length} записей</span>
+                            </div>
+                            <div class="terminal-content scrollable">
+                                <div class="file-content">${formatJSON(data.slice(0, 3))}${data.length > 3 ? '\n... и еще ' + (data.length - 3) + ' записей' : ''}</div>
+                            </div>
+                        </div>
+                    `;
+                } catch (error) {
+                    content += `
+                        <div class="terminal-window">
+                            <div class="terminal-header">
+                                <span>${table.toUpperCase()}</span>
+                                <span>ERROR</span>
+                            </div>
+                            <div class="terminal-content">
+                                <div style="color: #ff0000;">Ошибка загрузки</div>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+            
+            content += '</div>';
+            document.getElementById('content').innerHTML = content;
+        }
+        
+        // Экспорт базы данных
+        async function exportDatabase() {
+            try {
+                const response = await fetch('/api/database/export');
+                const sql = await response.text();
+                
+                // Создаем и скачиваем файл
+                const blob = new Blob([sql], { type: 'application/sql' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'sports_nutrition_export.sql';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                
+                alert('База данных экспортирована в SQL файл!');
+                
+            } catch (error) {
+                alert('Ошибка экспорта: ' + error.message);
+            }
+        }
+        
+        // Форматирование JSON
+        function formatJSON(obj) {
+            return JSON.stringify(obj, null, 2)
+                .replace(/"([^"]+)":/g, '<span class="json-key">"$1":</span>')
+                .replace(/: "([^"]+)"/g, ': <span class="json-string">"$1"</span>')
+                .replace(/: (\d+)/g, ': <span class="json-number">$1</span>')
+                .replace(/: (true|false)/g, ': <span class="json-boolean">$1</span>');
+        }
+        
+        // Форматирование цены
+        function formatPrice(price) {
+            return new Intl.NumberFormat('uz-UZ').format(price) + ' сум';
+        }
+        
+        // Обработка кликов для переключения автообновления
+        document.getElementById('refresh-status').addEventListener('click', toggleAutoRefresh);
+    </script>
+</body>
+</html>

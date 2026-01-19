@@ -1,0 +1,134 @@
+[
+  {
+    "id": 1,
+    "name": "Whey Protein 2kg",
+    "description": "Сывороточный протеин высокого качества, 80% белка",
+    "price": 450000,
+    "category_id": 1,
+    "stock_quantity": 50,
+    "emoji": "🥛",
+    "created_at": "2025-12-20T13:55:12.639Z",
+    "updated_at": "2025-12-20T13:55:12.639Z"
+  },
+  {
+    "id": 2,
+    "name": "Casein Protein 1.8kg",
+    "description": "Казеиновый протеин медленного усвоения",
+    "price": 520000,
+    "category_id": 1,
+    "stock_quantity": 30,
+    "emoji": "🥛",
+    "created_at": "2025-12-20T13:55:12.639Z",
+    "updated_at": "2025-12-20T13:55:12.639Z"
+  },
+  {
+    "id": 3,
+    "name": "Isolate Protein 2kg",
+    "description": "Изолят сывороточного протеина, 90% белка",
+    "price": 650000,
+    "category_id": 1,
+    "stock_quantity": 25,
+    "emoji": "🥛",
+    "created_at": "2025-12-20T13:55:12.639Z",
+    "updated_at": "2025-12-20T13:55:12.639Z"
+  },
+  {
+    "id": 4,
+    "name": "BCAA 2:1:1 500g",
+    "description": "Комплекс незаменимых аминокислот",
+    "price": 280000,
+    "category_id": 2,
+    "stock_quantity": 60,
+    "emoji": "💊",
+    "created_at": "2025-12-20T13:55:12.639Z",
+    "updated_at": "2025-12-20T13:55:12.639Z"
+  },
+  {
+    "id": 5,
+    "name": "Glutamine 300g",
+    "description": "L-глютамин для восстановления",
+    "price": 180000,
+    "category_id": 2,
+    "stock_quantity": 40,
+    "emoji": "💊",
+    "created_at": "2025-12-20T13:55:12.639Z",
+    "updated_at": "2025-12-20T13:55:12.639Z"
+  },
+  {
+    "id": 6,
+    "name": "Creatine Monohydrate 500g",
+    "description": "Креатин моногидрат микронизированный",
+    "price": 150000,
+    "category_id": 3,
+    "stock_quantity": 80,
+    "emoji": "⚡",
+    "created_at": "2025-12-20T13:55:12.639Z",
+    "updated_at": "2025-12-20T13:55:12.639Z"
+  },
+  {
+    "id": 7,
+    "name": "Multivitamin Complex",
+    "description": "Комплекс витаминов и минералов, 90 капсул",
+    "price": 120000,
+    "category_id": 4,
+    "stock_quantity": 100,
+    "emoji": "🌟",
+    "created_at": "2025-12-20T13:55:12.639Z",
+    "updated_at": "2025-12-20T13:55:12.639Z"
+  },
+  {
+    "id": 8,
+    "name": "Mass Gainer 3kg",
+    "description": "Углеводно-белковая смесь для набора массы",
+    "price": 380000,
+    "category_id": 5,
+    "stock_quantity": 40,
+    "emoji": "📈",
+    "created_at": "2025-12-20T13:55:12.639Z",
+    "updated_at": "2025-12-20T13:55:12.639Z"
+  },
+  {
+    "id": 9,
+    "name": "L-Carnitine 500ml",
+    "description": "Л-карнитин жидкий для жиросжигания",
+    "price": 140000,
+    "category_id": 6,
+    "stock_quantity": 55,
+    "emoji": "🔥",
+    "created_at": "2025-12-20T13:55:12.639Z",
+    "updated_at": "2025-12-20T13:55:12.639Z"
+  },
+  {
+    "id": 10,
+    "name": "Pre-Workout Extreme",
+    "description": "Предтренировочный комплекс, 300g",
+    "price": 280000,
+    "category_id": 7,
+    "stock_quantity": 50,
+    "emoji": "⚡",
+    "created_at": "2025-12-20T13:55:12.639Z",
+    "updated_at": "2025-12-20T13:55:12.639Z"
+  },
+  {
+    "id": 11,
+    "name": "Protein Bar Chocolate",
+    "description": "Протеиновый батончик шоколад, 20g белка",
+    "price": 15000,
+    "category_id": 8,
+    "stock_quantity": 200,
+    "emoji": "🍫",
+    "created_at": "2025-12-20T13:55:12.639Z",
+    "updated_at": "2025-12-20T13:55:12.639Z"
+  },
+  {
+    "id": 12,
+    "name": "Protein Bar Vanilla",
+    "description": "Протеиновый батончик ваниль, 20g белка",
+    "price": 15000,
+    "category_id": 8,
+    "stock_quantity": 180,
+    "emoji": "🍦",
+    "created_at": "2025-12-20T13:55:12.639Z",
+    "updated_at": "2025-12-20T13:55:12.639Z"
+  }
+]

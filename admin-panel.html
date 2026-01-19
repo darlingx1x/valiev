@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель БД - Валиев И. Б., группа 036-22 SMMr</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #ffffff;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .logo {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .author-info {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .tab-btn:hover, .tab-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transform: translateY(-2px);
+        }
+        
+        .tab-content {
+            display: none;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .db-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .db-table th, .db-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .db-table th {
+            background: rgba(255, 255, 255, 0.1);
+            font-weight: 600;
+            color: #00d4aa;
+        }
+        
+        .db-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 500;
+            margin: 0.5rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #00d4aa;
+        }
+        
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+        }
+        
+        .form-group input::placeholder, .form-group textarea::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+        
+        .status-pending { background: #ed8936; }
+        .status-confirmed { background: #4299e1; }
+        .status-shipped { background: #9f7aea; }
+        .status-delivered { background: #48bb78; }
+        .status-cancelled { background: #f56565; }
+        
+        .price {
+            font-weight: 600;
+            color: #00d4aa;
+        }
+        
+        .stock-low {
+            color: #f56565;
+            font-weight: 600;
+        }
+        
+        .stock-ok {
+            color: #48bb78;
+            font-weight: 600;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn-small {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.9rem;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #f56565;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        
+        .card h3 {
+            color: #00d4aa;
+            margin-bottom: 1rem;
+        }
+        
+        .card .number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .scrollable {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🗄️ Админ-панель БД</div>
+            <h1>Управление базой данных</h1>
+        </div>
+        
+        <div class="author-info">
+            <h2>👨‍💻 Информация об авторе</h2>
+            <p><strong>Студент:</strong> Валиев И. Б.</p>
+            <p><strong>Группа:</strong> 036-22 SMMr</p>
+            <p><strong>Проект:</strong> Интернет-магазин спортивного питания</p>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('overview')">📊 Обзор</button>
+            <button class="tab-btn" onclick="showTab('products')">🛍️ Товары</button>
+            <button class="tab-btn" onclick="showTab('categories')">📂 Категории</button>
+            <button class="tab-btn" onclick="showTab('orders')">📋 Заказы</button>
+            <button class="tab-btn" onclick="showTab('database')">🗄️ База данных</button>
+        </div>
+        
+        <!-- Обзор -->
+        <div id="overview" class="tab-content active">
+            <h2>📊 Статистика системы</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>Товары</h3>
+                    <div class="number" id="total-products">12</div>
+                    <p>Всего товаров</p>
+                </div>
+                <div class="card">
+                    <h3>Категории</h3>
+                    <div class="number" id="total-categories">8</div>
+                    <p>Категорий товаров</p>
+                </div>
+                <div class="card">
+                    <h3>Заказы</h3>
+                    <div class="number" id="total-orders">0</div>
+                    <p>Всего заказов</p>
+                </div>
+                <div class="card">
+                    <h3>Выручка</h3>
+                    <div class="number" id="total-revenue">0</div>
+                    <p>сум</p>
+                </div>
+            </div>
+            
+            <h3>🔄 Текущее состояние</h3>
+            <p><strong>Режим работы:</strong> Демо-версия (данные в памяти)</p>
+            <p><strong>База данных:</strong> MySQL схема готова к развертыванию</p>
+            <p><strong>Статус:</strong> <span style="color: #48bb78;">✅ Работает</span></p>
+        </div>
+        
+        <!-- Товары -->
+        <div id="products" class="tab-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h2>🛍️ Управление товарами</h2>
+                <button class="btn" onclick="showAddProductModal()">➕ Добавить товар</button>
+            </div>
+            
+            <div class="scrollable">
+                <table class="db-table" id="products-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Название</th>
+                            <th>Категория</th>
+                            <th>Цена</th>
+                            <th>Остаток</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody id="products-tbody">
+                        <!-- Данные загружаются через JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Категории -->
+        <div id="categories" class="tab-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h2>📂 Управление категориями</h2>
+                <button class="btn" onclick="showAddCategoryModal()">➕ Добавить категорию</button>
+            </div>
+            
+            <table class="db-table" id="categories-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Название</th>
+                        <th>Описание</th>
+                        <th>Товаров</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody id="categories-tbody">
+                    <!-- Данные загружаются через JavaScript -->
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Заказы -->
+        <div id="orders" class="tab-content">
+            <h2>📋 Управление заказами</h2>
+            
+            <div class="scrollable">
+                <table class="db-table" id="orders-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Клиент</th>
+                            <th>Email</th>
+                            <th>Сумма</th>
+                            <th>Статус</th>
+                            <th>Дата</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orders-tbody">
+                        <!-- Данные загружаются через JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- База данных -->
+        <div id="database" class="tab-content">
+            <h2>🗄️ Управление базой данных</h2>
+            
+            <div class="grid">
+                <div class="card">
+                    <h3>📋 Схема БД</h3>
+                    <p>6 таблиц MySQL</p>
+                    <button class="btn btn-secondary" onclick="showSchema()">Показать схему</button>
+                </div>
+                <div class="card">
+                    <h3>🌱 Начальные данные</h3>
+                    <p>Готовые данные для тестирования</p>
+                    <button class="btn btn-secondary" onclick="showSeeds()">Показать данные</button>
+                </div>
+                <div class="card">
+                    <h3>⚙️ Установка</h3>
+                    <p>Скрипт установки MySQL</p>
+                    <button class="btn btn-secondary" onclick="showInstallInstructions()">Инструкции</button>
+                </div>
+            </div>
+            
+            <div style="margin-top: 2rem;">
+                <h3>📊 Структура базы данных</h3>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="margin: 0.5rem 0;">📂 <strong>categories</strong> - Категории товаров</li>
+                    <li style="margin: 0.5rem 0;">🛍️ <strong>products</strong> - Товары с ценами в UZS</li>
+                    <li style="margin: 0.5rem 0;">📋 <strong>orders</strong> - Заказы клиентов</li>
+                    <li style="margin: 0.5rem 0;">📦 <strong>order_items</strong> - Товары в заказах</li>
+                    <li style="margin: 0.5rem 0;">🛒 <strong>cart_items</strong> - Корзина покупок</li>
+                    <li style="margin: 0.5rem 0;">📝 <strong>operation_logs</strong> - Логи операций</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Модальные окна -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div id="modal-body">
+                <!-- Содержимое модального окна -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Данные из демо-сервера
+        let currentData = {
+            products: [],
+            categories: [],
+            orders: []
+        };
+        
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+        });
+        
+        // Загрузка данных с сервера
+        async function loadData() {
+            try {
+                // Загружаем товары
+                const productsResponse = await fetch('/api/products');
+                currentData.products = await productsResponse.json();
+                
+                // Загружаем корзину (для демонстрации)
+                const cartResponse = await fetch('/api/cart');
+                const cartData = await cartResponse.json();
+                
+                // Обновляем интерфейс
+                updateProductsTable();
+                updateCategoriesTable();
+                updateOrdersTable();
+                updateOverview();
+                
+            } catch (error) {
+                console.error('Ошибка загрузки данных:', error);
+            }
+        }
+        
+        // Переключение вкладок
+        function showTab(tabName) {
+            // Скрываем все вкладки
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Убираем активный класс с кнопок
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Показываем выбранную вкладку
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+        
+        // Обновление таблицы товаров
+        function updateProductsTable() {
+            const tbody = document.getElementById('products-tbody');
+            tbody.innerHTML = '';
+            
+            currentData.products.forEach(product => {
+                const row = document.createElement('tr');
+                const stockClass = product.stock_quantity < 20 ? 'stock-low' : 'stock-ok';
+                
+                row.innerHTML = `
+                    <td>${product.id}</td>
+                    <td>${product.emoji || '📦'} ${product.name}</td>
+                    <td>Категория ${product.category_id}</td>
+                    <td class="price">${product.formatted_price || formatPrice(product.price)}</td>
+                    <td class="${stockClass}">${product.stock_quantity} шт.</td>
+                    <td class="actions">
+                        <button class="btn btn-small btn-secondary" onclick="editProduct(${product.id})">✏️ Изменить</button>
+                        <button class="btn btn-small" onclick="deleteProduct(${product.id})" style="background: #f56565;">🗑️ Удалить</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        // Обновление таблицы категорий
+        function updateCategoriesTable() {
+            const tbody = document.getElementById('categories-tbody');
+            tbody.innerHTML = '';
+            
+            // Создаем уникальные категории из товаров
+            const categories = [
+                { id: 1, name: '🥛 Протеины', description: 'Белковые добавки' },
+                { id: 2, name: '💊 Аминокислоты', description: 'BCAA и другие аминокислоты' },
+                { id: 3, name: '⚡ Креатин', description: 'Креатин и энергетики' },
+                { id: 4, name: '🌟 Витамины', description: 'Витаминные комплексы' },
+                { id: 5, name: '📈 Гейнеры', description: 'Для набора массы' },
+                { id: 6, name: '🔥 Жиросжигатели', description: 'Для снижения веса' },
+                { id: 7, name: '⚡ Энергетики', description: 'Предтренировочные' },
+                { id: 8, name: '🍫 Батончики', description: 'Протеиновые снеки' }
+            ];
+            
+            categories.forEach(category => {
+                const productCount = currentData.products.filter(p => p.category_id === category.id).length;
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td>${category.id}</td>
+                    <td>${category.name}</td>
+                    <td>${category.description}</td>
+                    <td>${productCount} товаров</td>
+                    <td class="actions">
+                        <button class="btn btn-small btn-secondary" onclick="editCategory(${category.id})">✏️ Изменить</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        // Обновление таблицы заказов
+        function updateOrdersTable() {
+            const tbody = document.getElementById('orders-tbody');
+            tbody.innerHTML = '';
+            
+            if (currentData.orders.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem;">Заказов пока нет</td></tr>';
+                return;
+            }
+            
+            currentData.orders.forEach(order => {
+                const row = document.createElement('tr');
+                const statusClass = `status-${order.status}`;
+                
+                row.innerHTML = `
+                    <td>${order.id}</td>
+                    <td>${order.customer_name}</td>
+                    <td>${order.customer_email || 'Не указан'}</td>
+                    <td class="price">${formatPrice(order.total_amount)}</td>
+                    <td><span class="status-indicator ${statusClass}"></span>${order.status}</td>
+                    <td>${new Date(order.created_at).toLocaleDateString('ru-RU')}</td>
+                    <td class="actions">
+                        <button class="btn btn-small btn-secondary" onclick="viewOrder(${order.id})">👁️ Просмотр</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        // Обновление обзора
+        function updateOverview() {
+            document.getElementById('total-products').textContent = currentData.products.length;
+            document.getElementById('total-categories').textContent = '8';
+            document.getElementById('total-orders').textContent = currentData.orders.length;
+            
+            const totalRevenue = currentData.orders.reduce((sum, order) => sum + order.total_amount, 0);
+            document.getElementById('total-revenue').textContent = formatPrice(totalRevenue);
+        }
+        
+        // Форматирование цены
+        function formatPrice(price) {
+            return new Intl.NumberFormat('uz-UZ').format(price) + ' сум';
+        }
+        
+        // Модальные окна
+        function showModal(content) {
+            document.getElementById('modal-body').innerHTML = content;
+            document.getElementById('modal').style.display = 'block';
+        }
+        
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+        
+        // Функции управления товарами
+        function showAddProductModal() {
+            const content = `
+                <h2>➕ Добавить товар</h2>
+                <form onsubmit="addProduct(event)">
+                    <div class="form-group">
+                        <label>Название товара</label>
+                        <input type="text" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Описание</label>
+                        <textarea name="description" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Цена (в сумах)</label>
+                        <input type="number" name="price" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Категория</label>
+                        <select name="category_id" required>
+                            <option value="1">🥛 Протеины</option>
+                            <option value="2">💊 Аминокислоты</option>
+                            <option value="3">⚡ Креатин</option>
+                            <option value="4">🌟 Витамины</option>
+                            <option value="5">📈 Гейнеры</option>
+                            <option value="6">🔥 Жиросжигатели</option>
+                            <option value="7">⚡ Энергетики</option>
+                            <option value="8">🍫 Батончики</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Количество на складе</label>
+                        <input type="number" name="stock_quantity" value="0" required>
+                    </div>
+                    <button type="submit" class="btn">Добавить товар</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Отмена</button>
+                </form>
+            `;
+            showModal(content);
+        }
+        
+        function addProduct(event) {
+            event.preventDefault();
+            alert('В демо-версии добавление товаров недоступно. Используйте полную MySQL версию.');
+            closeModal();
+        }
+        
+        function editProduct(id) {
+            const product = currentData.products.find(p => p.id === id);
+            if (!product) return;
+            
+            const content = `
+                <h2>✏️ Редактировать товар</h2>
+                <p><strong>Товар:</strong> ${product.name}</p>
+                <p><strong>Цена:</strong> ${product.formatted_price}</p>
+                <p><strong>Остаток:</strong> ${product.stock_quantity} шт.</p>
+                <br>
+                <p>В демо-версии редактирование недоступно.</p>
+                <p>Для полного функционала используйте MySQL версию.</p>
+                <br>
+                <button class="btn btn-secondary" onclick="closeModal()">Закрыть</button>
+            `;
+            showModal(content);
+        }
+        
+        function deleteProduct(id) {
+            if (confirm('Удалить товар? В демо-версии это действие недоступно.')) {
+                alert('В демо-версии удаление недоступно. Используйте полную MySQL версию.');
+            }
+        }
+        
+        // Функции для базы данных
+        function showSchema() {
+            const content = `
+                <h2>📋 Схема базы данных MySQL</h2>
+                <div style="text-align: left; font-family: monospace; font-size: 0.9rem;">
+                    <h3>Таблицы:</h3>
+                    <ul>
+                        <li><strong>categories</strong> - Категории товаров</li>
+                        <li><strong>products</strong> - Товары с ценами в UZS</li>
+                        <li><strong>orders</strong> - Заказы клиентов</li>
+                        <li><strong>order_items</strong> - Товары в заказах</li>
+                        <li><strong>cart_items</strong> - Корзина покупок</li>
+                        <li><strong>operation_logs</strong> - Логи операций</li>
+                    </ul>
+                    <h3>Файлы:</h3>
+                    <ul>
+                        <li><code>database/schema.sql</code> - Структура БД</li>
+                        <li><code>database/seeds.sql</code> - Начальные данные</li>
+                        <li><code>database/install.php</code> - Скрипт установки</li>
+                    </ul>
+                </div>
+                <button class="btn btn-secondary" onclick="closeModal()">Закрыть</button>
+            `;
+            showModal(content);
+        }
+        
+        function showSeeds() {
+            const content = `
+                <h2>🌱 Начальные данные</h2>
+                <div style="text-align: left;">
+                    <h3>Включает:</h3>
+                    <ul>
+                        <li>8 категорий спортивного питания</li>
+                        <li>18+ товаров с ценами в узбекских сумах</li>
+                        <li>Полные описания и характеристики</li>
+                        <li>Настроенные связи между таблицами</li>
+                    </ul>
+                    <p><strong>Файл:</strong> <code>database/seeds.sql</code></p>
+                </div>
+                <button class="btn btn-secondary" onclick="closeModal()">Закрыть</button>
+            `;
+            showModal(content);
+        }
+        
+        function showInstallInstructions() {
+            const content = `
+                <h2>⚙️ Установка MySQL базы данных</h2>
+                <div style="text-align: left; font-family: monospace; font-size: 0.9rem;">
+                    <h3>Шаги установки:</h3>
+                    <ol>
+                        <li>Установите MySQL 8.0+</li>
+                        <li>Запустите: <code>php database/install.php</code></li>
+                        <li>Или выполните SQL файлы вручную:
+                            <ul>
+                                <li><code>mysql -u root -p < database/schema.sql</code></li>
+                                <li><code>mysql -u root -p < database/seeds.sql</code></li>
+                            </ul>
+                        </li>
+                        <li>Настройте подключение в <code>src/config/database.php</code></li>
+                        <li>Запустите PHP версию: <code>php -S localhost:8000 -t public</code></li>
+                    </ol>
+                    <h3>Требования:</h3>
+                    <ul>
+                        <li>PHP 8.2+</li>
+                        <li>MySQL 8.0+</li>
+                        <li>PDO MySQL extension</li>
+                    </ul>
+                </div>
+                <button class="btn btn-secondary" onclick="closeModal()">Закрыть</button>
+            `;
+            showModal(content);
+        }
+        
+        // Закрытие модального окна при клике вне его
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+        
+        // Автообновление данных каждые 30 секунд
+        setInterval(loadData, 30000);
+    </script>
+</body>
+</html>

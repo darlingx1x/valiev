@@ -1,0 +1,125 @@
+\documentclass[a4paper,12pt]{article}
+
+% --- Подключение пакетов ---
+\usepackage[utf8]{inputenc}
+\usepackage[T2A]{fontenc}
+\usepackage[russian]{babel}
+\usepackage{graphicx}         % Пакет для картинок
+\usepackage{geometry}
+\geometry{top=2cm, bottom=2cm, left=3cm, right=1.5cm}
+\usepackage{hyperref} 
+\usepackage{titlesec}
+
+% --- Данные для титульного листа ---
+\title{Групповой отчет на тему: \\ 
+\textbf{«Сравнение эффективности создания презентаций в PowerPoint и LaTeX»}}
+
+\author{
+  \textbf{Группа разработчиков (067-22):} \\
+  1. Ли Никита (Лидер группы) \\
+  2. Иванов Иван \\
+  3. Петров Петр \\
+  4. Сидоров Сидор
+}
+\date{\today}
+
+\begin{document}
+
+% Титульный лист
+\maketitle
+\thispagestyle{empty}
+\newpage
+
+% Оглавление
+\tableofcontents
+\newpage
+
+% --- Введение ---
+\section{Введение}
+Целью данного отчета является сравнительный анализ двух популярных инструментов для создания презентаций: Microsoft PowerPoint и пакета Beamer в системе LaTeX. Актуальность темы подтверждается исследованиями Иванова и Петрова \cite{compare_article}.
+
+% --- Глава 1 ---
+\section{Анализ Microsoft PowerPoint}
+
+\subsection{Преимущества}
+PowerPoint является стандартом в бизнес-среде \cite{ppt_manual}.
+\begin{itemize}
+    \item Интуитивно понятный интерфейс (WYSIWYG).
+    \item Легкость вставки мультимедиа.
+    \item Низкий порог входа.
+\end{itemize}
+
+\subsection{Недостатки}
+Однако, при работе с большими документами возникают проблемы:
+\begin{itemize}
+    \item Сложности с версткой математических формул.
+    \item «Поплывшее» форматирование при открытии на других версиях ПО.
+\end{itemize}
+
+% --- Глава 2 ---
+\section{Анализ LaTeX (Beamer)}
+
+\subsection{Преимущества подхода Code-based}
+Как отмечает Дональд Кнут \cite{knuth}, системы верстки обеспечивают идеальное качество печати и отображения.
+\begin{enumerate}
+    \item \textbf{Стабильность:} Презентация выглядит одинаково на любом компьютере.
+    \item \textbf{Математика:} Лучший инструмент для формул: $E=mc^2$.
+    \item \textbf{Автоматизация:} Оглавление и списки строятся автоматически.
+\end{enumerate}
+
+\subsection{Сложности использования}
+Главный минус — необходимость знания синтаксиса кода, что подробно описано в документации \cite{overleaf_doc}.
+
+% --- Сравнительная таблица ---
+\section{Сравнение характеристик}
+В таблице \ref{tab:comparison} представлено итоговое сравнение инструментов.
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|l|c|c|}
+        \hline
+        \textbf{Критерий} & \textbf{PowerPoint} & \textbf{LaTeX (Beamer)} \\
+        \hline
+        Скорость создания (простая) & Высокая & Низкая \\
+        \hline
+        Качество формул & Среднее & Высокое \\
+        \hline
+        Совместная работа & Online Office & Overleaf \\
+        \hline
+        Цена & Платный (часто) & Бесплатный \\
+        \hline
+    \end{tabular}
+    \caption{Сравнительная таблица PowerPoint и LaTeX}
+    \label{tab:comparison}
+\end{table}
+
+% --- Графическая иллюстрация ---
+\section{Визуальное сравнение}
+На рисунке \ref{fig:logos} показан процесс работы в разных средах.
+
+\begin{figure}[h]
+    \centering
+    % ИСПРАВЛЕНО: добавлено явное расширение .png
+    % Убедись, что твой файл в проекте называется ppt_latex.png
+    \includegraphics[width=0.7\textwidth]{ppt_latex.png}
+    \caption{Логотипы инструментов}
+    \label{fig:logos}
+\end{figure}
+
+% --- Совместная работа ---
+\section{Организация совместной работы}
+Работа над отчетом велась в системе Overleaf. Группа из 4 человек (см. список авторов) использовала функцию «Track Changes» для отслеживания версий, что позволило избежать конфликтов редактирования.
+
+% --- Заключение ---
+\section{Заключение}
+Выбор инструмента зависит от задачи. Для быстрых визуальных докладов лучше подходит PowerPoint. Для научных докладов с большим количеством формул идеальным выбором является LaTeX.
+
+% --- БИБЛИОГРАФИЯ (BIBTEX) ---
+\newpage
+% Стиль оформления (plain - простой нумерованный)
+\bibliographystyle{plain} 
+% Подключение файла references.bib
+\bibliography{references}
+\addcontentsline{toc}{section}{Список литературы}
+
+\end{document}
