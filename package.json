@@ -1,0 +1,28 @@
+{
+  "name": "valiyev-sportshop",
+  "version": "1.0.0",
+  "description": "Интернет-магазин спортивного питания - Валиев И.Б., группа 036-22 SMMr",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "node test-runner.js"
+  },
+  "keywords": [
+    "ecommerce",
+    "sports-nutrition",
+    "nodejs",
+    "mysql",
+    "web-application"
+  ],
+  "author": "Валиев И.Б., группа 036-22 SMMr",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/valiyev-sportshop.git"
+  }
+}
